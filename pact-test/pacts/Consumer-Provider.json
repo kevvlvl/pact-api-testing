@@ -1,0 +1,37 @@
+{
+  "consumer": {
+    "name": "Consumer"
+  },
+  "interactions": [
+    {
+      "description": "a request to obtain clients",
+      "providerState": "Client API Mock",
+      "request": {
+        "method": "GET",
+        "path": "/api/clientApi"
+      },
+      "response": {
+        "body": "{\"id\":1,\"name\":\"iddqd\"}",
+        "headers": {
+          "Content-Type": "text/json"
+        },
+        "status": 200
+      }
+    }
+  ],
+  "metadata": {
+    "pact-js": {
+      "version": "12.3.0"
+    },
+    "pactRust": {
+      "ffi": "0.4.16",
+      "models": "1.1.19"
+    },
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  },
+  "provider": {
+    "name": "Provider"
+  }
+}
