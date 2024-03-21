@@ -1,7 +1,5 @@
 import { Pact } from '@pact-foundation/pact';
 import axios, { AxiosResponse } from 'axios';
-import { somethingLike } from "@pact-foundation/pact/src/dsl/matchers";
-import { like } from "@pact-foundation/pact/src/v3/matchers";
 
 describe('API Contract Test', () => {
 
@@ -13,6 +11,15 @@ describe('API Contract Test', () => {
         dir: './pacts',
         logLevel: 'info',
     });
+
+    const healthApiProperties = {
+        message: 'API server is up and healthy'
+    };
+
+    const clientProperties = {
+        id: 1,
+        name: 'iddqd',
+    };
 
     // Setup Mocks here
     beforeAll(() => {
@@ -30,10 +37,7 @@ describe('API Contract Test', () => {
                    headers: {
                        'Content-Type': 'text/json'
                    },
-                   body: {
-                       id: 1,
-                       name: 'iddqd'
-                   },
+                   body: clientProperties,
                }
            })
         });
@@ -51,9 +55,7 @@ describe('API Contract Test', () => {
         expect(response.status).toEqual(200);
         expect(response.headers).toHaveProperty('content-type', 'text/json; charset=utf-8')
         expect(response.headers).toHaveProperty('x-app-trxid', '123999')
-        expect(response.data).toEqual({
-            'message': 'API server is up and healthy'
-        });
+        expect(response.data).toEqual(healthApiProperties);
     });
 
     // Example of a contract test against a mock API definition at self
@@ -62,9 +64,6 @@ describe('API Contract Test', () => {
 
         expect(response.status).toEqual(200);
         expect(response.headers).toHaveProperty('content-type', 'text/json')
-        expect(response.data).toEqual({
-            id: 1,
-            name: 'iddqd'
-        });
+        expect(response.data).toEqual(clientProperties);
     });
 });
