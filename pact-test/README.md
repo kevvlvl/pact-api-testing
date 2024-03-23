@@ -2,9 +2,68 @@
 
 Example of how to run contract testing using pact. Here, we are testing the typescript-written API `pact-health-api`
 
-## Run Pact
+## Run postgres for pact Broker
 
-This will run the tests (based on jest)
+Also supports mysql, but postgres is recommended (for JSON format)
+```shell
+❯ nerdctl image pull postgres
+docker.io/library/postgres:latest:                                                resolved       |++++++++++++++++++++++++++++++++++++++|
+index-sha256:6b841c8f6a819884207402f1209a8116844365df15fca8cf556fc54a24c70800:    done           |++++++++++++++++++++++++++++++++++++++|
+...
+layer-sha256:13de11c6ecda05d8df6bd5fa12f60fba7d4c29c144ab97de5270df3db130cbba:    done           |++++++++++++++++++++++++++++++++++++++| 
+elapsed: 25.4s                                                                    total:  118.5  (4.7 MiB/s)                                       
+
+❯ nerdctl image ls
+REPOSITORY                    TAG       IMAGE ID        CREATED               PLATFORM       SIZE         BLOB SIZE
+postgres                      latest    6b841c8f6a81    About a minute ago    linux/amd64    436.0 MiB    146.3 MiB
+
+❯ nerdctl run --name pactpostgres -e POSTGRES_PASSWORD=mypwd -p 5432:5432 -d postgres
+79af58c4d5a08ec6352d4774785bdeecb5bc037bdbef9331e59720f59dc3ff36
+
+❯ nerdctl container ls
+CONTAINER ID    IMAGE                                COMMAND                   CREATED           STATUS    PORTS    NAMES
+79af58c4d5a0    docker.io/library/postgres:latest    "docker-entrypoint.s…"    19 seconds ago    Up                 pactpostgres 
+```
+
+You can now connect to the above postgres using pgadmin, datagrip, etc. at localhost:5432 with user `postgres` and password `mypwd` to confirm connection and health of postgres
+
+## Run the pact Broker
+
+```shell
+❯ nerdctl image pull pactfoundation/pact-broker
+docker.io/pactfoundation/pact-broker:latest:                                      resolved       |++++++++++++++++++++++++++++++++++++++| 
+index-sha256:8f10947f230f661ef21f270a4abcf53214ba27cd68063db81de555fcd93e07dd:    done           |++++++++++++++++++++++++++++++++++++++|
+... 
+layer-sha256:c289b0ded1e97f8df4578475987ad6d7443450f293a55fd8765db4fa67b85c78:    done           |++++++++++++++++++++++++++++++++++++++| 
+elapsed: 32.3s                                                                    total:  248.4  (7.7 MiB/s)                                       
+
+❯ nerdctl image ls
+REPOSITORY                    TAG       IMAGE ID        CREATED         PLATFORM       SIZE         BLOB SIZE
+pactfoundation/pact-broker    latest    8f10947f230f    10 hours ago    linux/amd64    678.1 MiB    248.4 MiB
+
+❯ nerdctl run --name pactbroker \
+-e PACT_BROKER_DATABASE_USERNAME=postgres \
+-e PACT_BROKER_DATABASE_PASSWORD=mypwd \
+-e PACT_BROKER_DATABASE_HOST=pactpostgres \
+-e PACT_BROKER_DATABASE_NAME=postgres \
+-e PACT_BROKER_DATABASE_PORT=5432 \
+-p 9292:9292 -d pactfoundation/pact-broker
+
+9e0b5f8213fa136a3334ecbe19d78a29d3dbf5bba747cd98101dfc8b7047e9af
+
+❯ nerdctl container ls
+CONTAINER ID    IMAGE                                          COMMAND                   CREATED           STATUS    PORTS                     NAMES
+58061c79af04    docker.io/library/postgres:latest              "docker-entrypoint.s…"    10 minutes ago    Up        0.0.0.0:5432->5432/tcp    pactpostgres
+9e0b5f8213fa    docker.io/pactfoundation/pact-broker:latest    "sh ./entrypoint.sh …"    2 seconds ago     Up        0.0.0.0:9292->9292/tcp    pactbroker
+```
+
+At this point, pact broker connected to postgres to create numerous tables, and the broker will be up and healthy.
+
+You can now connect to the pact broker in the browser at `http://localhost:9292`
+
+## Generate Pact files
+
+This will run the unit tests (based on jest) which are based on mocks of how we (devs) expect the APIs to behave
 
 ```shell
 npm run test
