@@ -16,4 +16,4 @@ Curl the endpoint
 curl -v localhost:3000/api/health
 ```
 
-Now, see the project `pact-health-test` for the contract test
+Now, see the folder `api-consumer-pact` for the consumer driven contract test.
