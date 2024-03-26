@@ -1,6 +1,6 @@
-# pact-health-test
+# api-consumer-pact
 
-Example of how to run contract testing using pact. Here, we are testing the typescript-written API `pact-health-api`
+Example of how to run contract testing using pact. Here, we are testing the typescript-written API `health-api`
 
 ## Run postgres for pact Broker
 
@@ -72,3 +72,44 @@ npm run test
 Test results:
 
 See the console output as well as the pact files under `./pacts`
+
+### Perform a manual provider test
+
+The _manualest_ method now is to take the generated pact file, and copy it in the `pacts` folder of the api (which is our Health API).
+We have a test there that consumes the pact file from that local directory and validates the pact file against itself in an integration test (with a running express server)
+
+1. Copy the pact file from `api-consumer-test` to `api`
+2. Go to `api` and run test:
+    ```shell
+    ❯ npm run test
+    > health-api@1.0.0 test
+    > jest --ci
+    ...
+   Verifying a pact between Consumer and Provider
+    
+    a request to obtain API health status (0s loading, 37ms verification)
+    Given I have a Health API
+    returns a response which
+    has status code 200 (OK)
+    includes headers
+    "Content-Type" with value "application/json; charset=utf-8" (OK)
+    "X-App-TrxId" with value "123456" (OK)
+    has a matching body (OK)
+    
+    console.log
+    Pact Verification Complete!
+    ...
+   Test Suites: 1 passed, 1 total
+    Tests:       1 passed, 1 total
+    Snapshots:   0 total
+    Time:        1.142 s, estimated 2 s
+    Ran all test suites.
+    ```
+   
+As we can see, pact verified that our endpoint respects the contract as defined in our pact file.
+
+In practice, copy pasting these files manually would be near impossible, therefore the pact-broker is here to help us with ensuring that new pact files are provided to devs in an accurate and timely manner.
+
+Use the manual method to perform initial testing, PoC, evaluation. Once you are sure of the approach, proceed with the broker
+
+### Perform an automated provider test using the Pact broker

@@ -1,12 +1,12 @@
 {
-  "name": "pact-contract-test",
+  "name": "health-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
     "dev": "nodemon source/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --ci"
   },
   "author": "",
   "license": "ISC",
@@ -14,12 +14,21 @@
     "@types/express": "^4.17.21",
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.11.30",
+    "chai": "^5.1.0",
     "express": "^4.19.1",
     "morgan": "^1.10.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.3"
   },
   "devDependencies": {
+    "@babel/core": "^7.24.3",
+    "@babel/preset-env": "^7.24.3",
+    "@babel/preset-typescript": "^7.24.1",
+    "@pact-foundation/pact": "^12.3.0",
+    "@types/jest": "^29.5.12",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
     "nodemon": "^3.1.0"
   }
 }
